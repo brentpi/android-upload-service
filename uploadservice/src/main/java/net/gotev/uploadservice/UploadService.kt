@@ -98,8 +98,8 @@ class UploadService : Service() {
     private val taskObservers by lazy {
         arrayOf(
             BroadcastEmitter(this),
-            UploadServiceConfig.notificationHandlerFactory(this),
-            TaskCompletionNotifier(this)
+            UploadServiceConfig.notificationHandlerFactoryService(this),
+            TaskCompletionNotifier(service = this)
         )
     }
 

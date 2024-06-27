@@ -5,7 +5,7 @@ import android.util.Log
 class DefaultLoggerDelegate : UploadServiceLogger.Delegate {
 
     companion object {
-        private const val TAG = "UploadService"
+        private const val TAG = "UploadWorker"
     }
 
     override fun error(component: String, uploadId: String, message: String, exception: Throwable?) {

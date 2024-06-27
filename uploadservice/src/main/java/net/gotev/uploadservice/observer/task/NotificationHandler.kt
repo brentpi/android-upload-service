@@ -9,6 +9,7 @@ import androidx.core.app.NotificationCompat
 import net.gotev.uploadservice.UploadService
 import net.gotev.uploadservice.UploadServiceConfig.namespace
 import net.gotev.uploadservice.UploadServiceConfig.placeholdersProcessor
+import net.gotev.uploadservice.UploadWorker
 import net.gotev.uploadservice.data.UploadInfo
 import net.gotev.uploadservice.data.UploadNotificationConfig
 import net.gotev.uploadservice.data.UploadNotificationStatusConfig
@@ -16,12 +17,18 @@ import net.gotev.uploadservice.exceptions.UserCancelledUploadException
 import net.gotev.uploadservice.extensions.validateNotificationChannel
 import net.gotev.uploadservice.network.ServerResponse
 
-class NotificationHandler(private val service: UploadService) : UploadTaskObserver {
+class NotificationHandler(private val service: UploadService? = null, private val worker: UploadWorker? = null) : UploadTaskObserver {
 
     private val notificationCreationTimeMillis by lazy { System.currentTimeMillis() }
 
     private val notificationManager by lazy {
-        service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (service != null) {
+            service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        } else if (worker != null) {
+            worker.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        } else {
+            throw IllegalStateException("Cannot get NotificationManager")
+        }
     }
 
     private fun NotificationCompat.Builder.addActions(config: UploadNotificationStatusConfig): NotificationCompat.Builder {
@@ -44,7 +51,7 @@ class NotificationHandler(private val service: UploadService) : UploadTaskObserv
 
     private fun NotificationCompat.Builder.notify(uploadId: String, notificationId: Int) {
         build().apply {
-            if (service.holdForegroundNotification(uploadId, this)) {
+            if ((service != null && service.holdForegroundNotification(uploadId, this) || (worker != null && worker.holdForegroundNotification(uploadId, this)))) {
                 notificationManager.cancel(notificationId)
             } else {
                 notificationManager.notify(notificationId, this)
@@ -59,7 +66,7 @@ class NotificationHandler(private val service: UploadService) : UploadTaskObserv
         return setGroup(namespace)
             .setContentTitle(placeholdersProcessor.processPlaceholders(statusConfig.title, info))
             .setContentText(placeholdersProcessor.processPlaceholders(statusConfig.message, info))
-            .setContentIntent(statusConfig.getClickIntent(service))
+            .setContentIntent(statusConfig.getClickIntent(service ?: worker?.applicationContext!!))
             .setSmallIcon(statusConfig.iconResourceID)
             .setLargeIcon(statusConfig.largeIcon)
             .setColor(statusConfig.iconColorResourceID)
@@ -70,7 +77,7 @@ class NotificationHandler(private val service: UploadService) : UploadTaskObserv
         notificationConfig: UploadNotificationConfig,
         info: UploadInfo
     ): NotificationCompat.Builder {
-        return NotificationCompat.Builder(service, notificationConfig.notificationChannelId)
+        return NotificationCompat.Builder(service ?: worker?.applicationContext!!, notificationConfig.notificationChannelId)
             .setWhen(notificationCreationTimeMillis)
             .setCommonParameters(notificationConfig.progress, info)
             .setOngoing(true)
@@ -93,7 +100,7 @@ class NotificationHandler(private val service: UploadService) : UploadTaskObserv
 
         if (statusConfig.autoClear) return
 
-        val notification = NotificationCompat.Builder(service, notificationChannelId)
+        val notification = NotificationCompat.Builder(service ?: worker?.applicationContext!!, notificationChannelId)
             .setCommonParameters(statusConfig, info)
             .setProgress(0, 0, false)
             .setOngoing(false)

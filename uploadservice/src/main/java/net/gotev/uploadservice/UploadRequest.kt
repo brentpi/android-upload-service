@@ -70,7 +70,7 @@ constructor(protected val context: Context, protected var serverUrl: String) : P
                 "cannot call it multiple times. Check your code."
         }
 
-        check(!UploadService.taskList.contains(uploadTaskParameters.id)) {
+        check(!UploadWorker.taskList.contains(uploadTaskParameters.id)) {
             "You have tried to perform startUpload() using the same uploadID of an " +
                 "already running task. You're trying to use the same ID for multiple uploads."
         }

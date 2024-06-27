@@ -6,6 +6,7 @@ import android.content.Intent
 import net.gotev.uploadservice.UploadService
 import net.gotev.uploadservice.UploadServiceConfig.broadcastNotificationAction
 import net.gotev.uploadservice.UploadServiceConfig.broadcastNotificationActionIntentFilter
+import net.gotev.uploadservice.UploadWorker
 import net.gotev.uploadservice.extensions.registerReceiverCompat
 import net.gotev.uploadservice.extensions.uploadIdToCancel
 import net.gotev.uploadservice.logger.UploadServiceLogger
@@ -25,6 +26,7 @@ open class NotificationActionsObserver(
                 "requested upload cancellation"
             }
             UploadService.stopUpload(it)
+            UploadWorker.stopUpload(it)
         }
     }
 
