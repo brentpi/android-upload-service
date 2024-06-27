@@ -42,51 +42,6 @@ fun Context.startNewUpload(
         .setInputData(inputData).build()
     WorkManager.getInstance(this).enqueue(uploadWorkRequest)
 
-//    val intent = Intent(this, UploadService::class.java).apply {
-//        action = UploadServiceConfig.uploadAction
-//        putExtra(taskParametersKey, params)
-//        putExtra(taskNotificationConfig, notificationConfig)
-//    }
-
-//    try {
-//        /*
-//        When trying to start a service on API 26+
-//        while the app is in the background, an IllegalStateException will be fired
-//
-//        https://developer.android.com/reference/android/content/Context#startService(android.content.Intent)
-//
-//        Then why not using startForegroundService always on API 26+? Read below
-//         */
-//        startService(intent)
-//    } catch (exc: Throwable) {
-//        if (SDK_INT >= 26 && exc is IllegalStateException) {
-//            /*
-//            this is a bugged Android API and Google is not going to fix it
-//
-//            https://issuetracker.google.com/issues/76112072
-//
-//            Android SDK can not guarantee that the service is going to be started in under 5 seconds
-//            which in turn can cause the non catchable
-//
-//            RemoteServiceException: Context.startForegroundService() did not then call Service.startForeground()
-//
-//            so the library is going to use this bugged API only as a last resort, to be able
-//            to support starting uploads also when the app is in the background, but preventing
-//            non catchable exceptions when you launch uploads while the app is in foreground.
-//             */
-//            startForegroundService(intent)
-//        } else {
-//            UploadServiceLogger.error(
-//                component = "UploadService",
-//                uploadId = params.id,
-//                exception = exc,
-//                message = {
-//                    "Error while starting AndroidUploadService"
-//                }
-//            )
-//        }
-//    }
-
     return params.id
 }
 
