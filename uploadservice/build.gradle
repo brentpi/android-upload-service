@@ -11,13 +11,13 @@ android {
         compileSdk 34
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 51
-        versionName '4.9.2'
+        versionCode 52
+        versionName '4.9.3'
 
         // https://commonsware.com/blog/2020/10/14/android-studio-4p1-library-modules-version-code.html
         // https://issuetracker.google.com/issues/158695880#comment15
-        buildConfigField 'int', 'VERSION_CODE', "51"
-        buildConfigField 'String', 'VERSION_NAME', "\"4.9.2\""
+        buildConfigField 'int', 'VERSION_CODE', "52"
+        buildConfigField 'String', 'VERSION_NAME', "\"4.9.3\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
