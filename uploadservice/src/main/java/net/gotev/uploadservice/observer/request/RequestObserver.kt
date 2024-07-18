@@ -6,7 +6,6 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import net.gotev.uploadservice.UploadRequest
-import net.gotev.uploadservice.UploadService
 import net.gotev.uploadservice.UploadWorker
 import net.gotev.uploadservice.data.UploadInfo
 

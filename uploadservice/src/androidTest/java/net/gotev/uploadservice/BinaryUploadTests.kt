@@ -145,7 +145,7 @@ class BinaryUploadTests : UploadServiceTestSuite() {
 
         uploadRequest.getBlockingResponse(appContext, doOnFirstProgress = { info ->
             // cancel upload on first progress
-            UploadService.stopUpload(info.uploadId)
+//            UploadService.stopUpload(info.uploadId)
         }).requireCancelledByUser()
 
         with(mockWebServer.takeRequest()) {

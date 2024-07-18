@@ -6,7 +6,6 @@ import android.content.Context
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import net.gotev.uploadservice.UploadService
 import net.gotev.uploadservice.UploadServiceConfig.namespace
 import net.gotev.uploadservice.UploadServiceConfig.placeholdersProcessor
 import net.gotev.uploadservice.UploadWorker
@@ -17,14 +16,12 @@ import net.gotev.uploadservice.exceptions.UserCancelledUploadException
 import net.gotev.uploadservice.extensions.validateNotificationChannel
 import net.gotev.uploadservice.network.ServerResponse
 
-class NotificationHandler(private val service: UploadService? = null, private val worker: UploadWorker? = null) : UploadTaskObserver {
+class NotificationHandler(private val worker: UploadWorker? = null) : UploadTaskObserver {
 
     private val notificationCreationTimeMillis by lazy { System.currentTimeMillis() }
 
     private val notificationManager by lazy {
-        if (service != null) {
-            service.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        } else if (worker != null) {
+        if (worker != null) {
             worker.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         } else {
             throw IllegalStateException("Cannot get NotificationManager")
@@ -40,7 +37,7 @@ class NotificationHandler(private val service: UploadService? = null, private va
         if (isRingToneEnabled && Build.VERSION.SDK_INT < 26) {
             setSound(
                 RingtoneManager.getActualDefaultRingtoneUri(
-                    service,
+                    worker?.applicationContext!!,
                     RingtoneManager.TYPE_NOTIFICATION
                 )
             )
@@ -51,7 +48,7 @@ class NotificationHandler(private val service: UploadService? = null, private va
 
     private fun NotificationCompat.Builder.notify(uploadId: String, notificationId: Int) {
         build().apply {
-            if ((service != null && service.holdForegroundNotification(uploadId, this) || (worker != null && worker.holdForegroundNotification(uploadId, this)))) {
+            if (worker != null && worker.holdForegroundNotification(uploadId, this)) {
                 notificationManager.cancel(notificationId)
             } else {
                 notificationManager.notify(notificationId, this)
@@ -66,7 +63,7 @@ class NotificationHandler(private val service: UploadService? = null, private va
         return setGroup(namespace)
             .setContentTitle(placeholdersProcessor.processPlaceholders(statusConfig.title, info))
             .setContentText(placeholdersProcessor.processPlaceholders(statusConfig.message, info))
-            .setContentIntent(statusConfig.getClickIntent(service ?: worker?.applicationContext!!))
+            .setContentIntent(statusConfig.getClickIntent(worker?.applicationContext!!))
             .setSmallIcon(statusConfig.iconResourceID)
             .setLargeIcon(statusConfig.largeIcon)
             .setColor(statusConfig.iconColorResourceID)
@@ -77,7 +74,7 @@ class NotificationHandler(private val service: UploadService? = null, private va
         notificationConfig: UploadNotificationConfig,
         info: UploadInfo
     ): NotificationCompat.Builder {
-        return NotificationCompat.Builder(service ?: worker?.applicationContext!!, notificationConfig.notificationChannelId)
+        return NotificationCompat.Builder(worker?.applicationContext!!, notificationConfig.notificationChannelId)
             .setWhen(notificationCreationTimeMillis)
             .setCommonParameters(notificationConfig.progress, info)
             .setOngoing(true)
@@ -100,7 +97,7 @@ class NotificationHandler(private val service: UploadService? = null, private va
 
         if (statusConfig.autoClear) return
 
-        val notification = NotificationCompat.Builder(service ?: worker?.applicationContext!!, notificationChannelId)
+        val notification = NotificationCompat.Builder(worker?.applicationContext!!, notificationChannelId)
             .setCommonParameters(statusConfig, info)
             .setProgress(0, 0, false)
             .setOngoing(false)

@@ -12,7 +12,6 @@ import android.os.Parcelable
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import net.gotev.uploadservice.UploadService
 import net.gotev.uploadservice.UploadServiceConfig
 import net.gotev.uploadservice.UploadTask
 import net.gotev.uploadservice.UploadWorker
@@ -21,7 +20,6 @@ import net.gotev.uploadservice.data.UploadTaskParameters
 import net.gotev.uploadservice.logger.UploadServiceLogger
 import net.gotev.uploadservice.logger.UploadServiceLogger.NA
 import net.gotev.uploadservice.observer.task.UploadTaskObserver
-import java.lang.IllegalStateException
 
 // constants used in the intent which starts this service
 private const val taskParametersKey = "taskParameters"
@@ -53,7 +51,7 @@ data class UploadTaskCreationParameters(
 fun Intent?.getUploadTaskCreationParameters(): UploadTaskCreationParameters? {
     if (this == null || action != UploadServiceConfig.uploadAction) {
         UploadServiceLogger.error(
-            component = UploadService.TAG,
+            component = UploadWorker.TAG,
             uploadId = NA,
             message = {
                 "Error while instantiating new task. Invalid intent received"
@@ -64,7 +62,7 @@ fun Intent?.getUploadTaskCreationParameters(): UploadTaskCreationParameters? {
 
     val params: UploadTaskParameters = parcelableCompat(taskParametersKey) ?: run {
         UploadServiceLogger.error(
-            component = UploadService.TAG,
+            component = UploadWorker.TAG,
             uploadId = NA,
             message = {
                 "Error while instantiating new task. Missing task parameters."
@@ -77,7 +75,7 @@ fun Intent?.getUploadTaskCreationParameters(): UploadTaskCreationParameters? {
         Class.forName(params.taskClass)
     } catch (exc: Throwable) {
         UploadServiceLogger.error(
-            component = UploadService.TAG,
+            component = UploadWorker.TAG,
             uploadId = NA,
             exception = exc,
             message = {
@@ -89,7 +87,7 @@ fun Intent?.getUploadTaskCreationParameters(): UploadTaskCreationParameters? {
 
     if (!UploadTask::class.java.isAssignableFrom(taskClass)) {
         UploadServiceLogger.error(
-            component = UploadService.TAG,
+            component = UploadWorker.TAG,
             uploadId = NA,
             message = {
                 "Error while instantiating new task. ${params.taskClass} does not extend UploadTask."
@@ -101,7 +99,7 @@ fun Intent?.getUploadTaskCreationParameters(): UploadTaskCreationParameters? {
     val notificationConfig: UploadNotificationConfig =
         parcelableCompat(taskNotificationConfig) ?: run {
             UploadServiceLogger.error(
-                component = UploadService.TAG,
+                component = UploadWorker.TAG,
                 uploadId = NA,
                 message = {
                     "Error while instantiating new task. Missing notification config."
@@ -139,7 +137,7 @@ fun Context.getUploadTask(
         }
 
         UploadServiceLogger.debug(
-            component = UploadService.TAG,
+            component = UploadWorker.TAG,
             uploadId = NA,
             message = {
                 "Successfully created new task with class: ${taskClass.name}"
@@ -148,7 +146,7 @@ fun Context.getUploadTask(
         uploadTask
     } catch (exc: Throwable) {
         UploadServiceLogger.error(
-            component = UploadService.TAG,
+            component = UploadWorker.TAG,
             uploadId = NA,
             exception = exc,
             message = {

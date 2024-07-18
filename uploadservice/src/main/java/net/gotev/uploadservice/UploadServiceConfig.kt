@@ -116,11 +116,6 @@ object UploadServiceConfig {
      * The default notification handler creates a notification for each upload task.
      */
     @JvmStatic
-    var notificationHandlerFactoryService: (UploadService) -> UploadTaskObserver = { uploadService ->
-        NotificationHandler(service = uploadService)
-    }
-
-    @JvmStatic
     var notificationHandlerFactoryWorker: (UploadWorker) -> UploadTaskObserver = { uploadWorker ->
         NotificationHandler(worker = uploadWorker)
     }

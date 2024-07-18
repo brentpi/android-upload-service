@@ -33,7 +33,7 @@ abstract class UploadTask : Runnable {
     /**
      * Flag indicating if the operation should continue or is cancelled. You should never
      * explicitly set this value in your subclasses, as it's written by the Upload Service
-     * when you call [UploadService.stopUpload]. If this value is false, you should
+     * when you call [stopUpload]. If this value is false, you should
      * terminate your upload task as soon as possible, so be sure to check the status when
      * performing long running operations such as data transfer. As a rule of thumb, check this
      * value at every step of the upload protocol you are implementing, and after that each chunk
@@ -214,7 +214,7 @@ abstract class UploadTask : Runnable {
     }
 
     /**
-     * Broadcasts a completion status update and informs the [UploadService] that the task
+     * Broadcasts a completion status update and informs that the task
      * executes successfully.
      * Call this when the task has completed the upload request and has received the response
      * from the server.
