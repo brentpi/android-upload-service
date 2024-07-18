@@ -3,19 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: "org.jlleitschuh.gradle.ktlint"
 
-// start - do not modify this if your project is on github
-project.ext {
-    mavDevelopers = [(github_username): (maintainer)]
-    mavSiteUrl = "https://github.com/${github_username}/${github_repository_name}"
-    mavGitUrl = mavSiteUrl + '.git'
-    bugTrackerUrl = mavSiteUrl + '/issues/'
-    mavProjectName = "android-upload-service-okhttp"
-    mavLibraryLicenses = ["Apache-2.0": 'http://www.apache.org/licenses/LICENSE-2.0.txt']
-    mavLibraryDescription = "OkHttp stack implementation for Android Upload Service."
-    mavVersion = library_version
-}
-// end - do not modify this if your project is on github
-
 android {
     namespace "net.gotev.uploadservice.okhttp"
     compileSdkVersion 34
@@ -72,5 +59,3 @@ dependencies {
     //comment the previous line and uncomment the next line for development (it uses the local lib)
     api project(':uploadservice')
 }
-
-apply from: 'https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle'

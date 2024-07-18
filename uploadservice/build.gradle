@@ -4,19 +4,6 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: "org.jlleitschuh.gradle.ktlint"
 apply plugin: 'kotlin-kapt'
 
-// start - do not modify this if your project is on github
-project.ext {
-    mavDevelopers = [(github_username): (maintainer)]
-    mavSiteUrl = "https://github.com/${github_username}/${github_repository_name}"
-    mavGitUrl = mavSiteUrl + '.git'
-    bugTrackerUrl = mavSiteUrl + '/issues/'
-    mavProjectName = "android-upload-service"
-    mavLibraryLicenses = ["Apache-2.0": 'http://www.apache.org/licenses/LICENSE-2.0.txt']
-    mavLibraryDescription = "Easily upload files in the background with automatic Android Notification Center progress indication."
-    mavVersion = library_version
-}
-// end - do not modify this if your project is on github
-
 android {
     namespace "net.gotev.uploadservice"
 
@@ -83,5 +70,3 @@ dependencies {
 
     implementation "androidx.work:work-runtime:2.9.0"
 }
-
-apply from: 'https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle'
